@@ -65,7 +65,7 @@ def set_camera_options(camera):
 
 def capture_image():
   global image_number
-  
+
   try:
     if (image_number < (config['total_images'] - 1)):
       # 사진 찍고 저장
@@ -99,7 +99,7 @@ def upload_video(path):
   if rpfVideoUploader.upload_init() == 201:
     print 'video upload start'
     # 업로드 완료후에, 이미지 및 동영상을 라즈베리파이에서 삭제 시킨다
-    rpfVideo.upload(remove_video_folder)
+    rpfVideoUploader.upload(remove_video_folder)
 
 def remove_video_folder():
   print 'remvoe photo/video folder'
