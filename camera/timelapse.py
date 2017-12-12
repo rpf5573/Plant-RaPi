@@ -64,7 +64,8 @@ def set_camera_options(camera):
   return camera
 
 def capture_image():
-
+  global image_number
+  
   try:
     if (image_number < (config['total_images'] - 1)):
       # 사진 찍고 저장

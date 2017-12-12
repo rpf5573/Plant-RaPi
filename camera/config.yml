@@ -10,10 +10,10 @@ resolution: {
 }
 
 # 총 찍을 사진의 개수를 정해주자
-total_images: 1000
+total_images: 20
 
 # 몇초에 한번씩 찍을것인지 정해주자
-interval: 3.0
+interval: 5.0
 
 # ISO 값 설정. 0 = 자동, 60~800 까지 직접 설정 가능
 iso: 0
