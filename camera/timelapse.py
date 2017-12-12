@@ -18,17 +18,6 @@ image_number = 0
 
 camera = PiCamera()
 
-dir = os.path.join(
-  sys.path[0],
-  'video'
-)
-create_timestamped_dir(dir)
-
-camera = set_camera_options(camera)
-
-# 시작한다
-capture_image()
-
 def create_timestamped_dir(dir):
   try:
     os.makedirs(dir)
@@ -115,3 +104,15 @@ def remove_video_folder():
   print 'remvoe photo/video folder'
   dest = 'video'
   shutil.rmtree(dest, ignore_errors=True)
+
+
+dir = os.path.join(
+  sys.path[0],
+  'video'
+)
+create_timestamped_dir(dir)
+
+camera = set_camera_options(camera)
+
+# 시작한다
+capture_image()
