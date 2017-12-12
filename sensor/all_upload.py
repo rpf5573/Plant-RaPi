@@ -62,4 +62,4 @@ while True:
       print response['error_message']
     
     # 1초 대기
-    time.sleep(1)
+    time.sleep(3600)
