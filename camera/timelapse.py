@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from picamera import PiCamera
 import errno
 import os
