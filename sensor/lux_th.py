@@ -3,7 +3,6 @@
 import RPi.GPIO as GPIO
 import os
 import time
-import datetime
 import smbus
 import random
 import requests
@@ -30,8 +29,6 @@ bus.write_byte_data(0x39, 0x01 | 0x80, 0x02)
 url = 'http://deepmind.dothome.co.kr/controller.php'
 
 while True:
-    now = datetime.datetime.now()
-    record_time = now.strftime('%Y-%m-%d %H:%M:%S')
     h,t = dht.read_retry(dht.DHT22, 4)
     print 'Temp={0:0.1f}*C Humidity={1:0.1f}%'.format(t,h)
 
@@ -49,16 +46,13 @@ while True:
       'temperature': format(t, '.2f'),
       'humidity': format(h, '.2f'),
       'light': ch0,
-      'ph': ph,
-      'time': record_time
+      'ph': ph
     }
 
     print records
 
     # 서버에 센서값 전달
     r = requests.post(url, data={'insert': True, 'records': json.dumps(records)})
-
-    print r.text
 
     # 서버의 응답을 가져옴
     response = r.json()
@@ -68,4 +62,4 @@ while True:
       print response['error_message']
     
     # 1초 대기
-    time.sleep(3600)
+    time.sleep(1)
