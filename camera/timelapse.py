@@ -106,6 +106,8 @@ def remove_video_folder():
   dest = 'video'
   shutil.rmtree(dest, ignore_errors=True)
 
+# 일단 깔끔하게 지우고 시작하자!
+remove_video_folder();
 
 dir = os.path.join(
   sys.path[0],
