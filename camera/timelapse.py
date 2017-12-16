@@ -6,10 +6,10 @@ import os
 import sys
 import threading
 from datetime import datetime
-from time import sleep
-import yaml
+import time
 import upload
 import shutil
+
 
 class Timelapse:
   def __init__(self, config):
@@ -18,63 +18,68 @@ class Timelapse:
     self.image_number = config['image_number']
 
   def create_timestamped_dir(self):
+    # 먼저 폴더를 지우고 시작하자
+    self.remove_video_folder()
     try:
       os.makedirs(self.video_dir)
     except OSError as e:
       if e.errno != errno.EEXIST:
         raise
 
-  def set_camera_options(self,config):
+  def set_camera_options(self, camera, config):
     # 해상도 설정
     if config['resolution']:
-      self.camera.resolution = (
+      camera.resolution = (
         config['resolution']['width'],
         config['resolution']['height']
       )
     
     # ISO 설정
     if config['iso']:
-      self.camera.iso = config['iso']
+      camera.iso = config['iso']
     
     # 밝기 설정
     if config['brightness']:
-      self.camera.iso = config['brightness']
+      camera.iso = config['brightness']
 
     # 셔터 스피드 설정.
     if config['shutter_speed']:
-      self.camera.shutter_speed = config['shutter_speed']
+      camera.shutter_speed = config['shutter_speed']
       # 셔터스피드가 제대로 설정되도록 1초정도 기다려 준다
       sleep(1)
-      self.camera.exposure_mode = 'off' # 뭔지 모르겠음
+      camera.exposure_mode = 'off' # 뭔지 모르겠음
 
     # 색조 설정
     if config['white_balance']:
-      self.camera.awb_mode = 'off'
-      self.camera.awb_gains = (
+      camera.awb_mode = 'off'
+      camera.awb_gains = (
         config['white_balance']['red_gain'],
         config['white_balance']['blue_gain']
       )
 
     # 카메라 회전 설정
     if config['rotation']:
-      self.camera.rotation = config['rotation']
+      camera.rotation = config['rotation']
 
-  def capture_image(self):
-    print "Let's take a photo"
+  def capture_image(self, config):
+    print "Let's take a picture"
     try:
-      if (self.image_number < (self.config['total_images'] - 1)):
+      if (self.image_number < (config['total_images'] - 1)):
         # 사진 찍고 저장
-        self.camera.capture(dir + '/image{0:05d}.jpg'.format(self.image_number))
+        self.camera.capture(self.video_dir + '/image{0:05d}.jpg'.format(self.image_number))
 
         # 정해진 시간 이후에 또 사진을 찍는다
-        thread = threading.Timer(self.config['interval'], self.capture_image).start()
+        threading.Timer(config['interval'], self.capture_image, args=[config] ).start()
+
         self.image_number += 1
       else:
         print '\n timelapse capture complete!'
 
         print "\n let's make timelapse video"
 
-        thread = threading.Timer(5, self.make_video).start()
+        self.make_video()
+
+        # thread = threading.Timer(5, self.make_video).start()
 
     except KeyboardInterrupt, SystemExit:
       print '\n timelapse capture cancelled'      
@@ -83,7 +88,7 @@ class Timelapse:
     now = datetime.now()
     nowDate = now.strftime('%Y-%m-%d_%H_%M_%S')
     video_path = self.video_dir + '/timelapse' + nowDate + '.mp4'
-    os.system('avconv -r 20 -i ' + dir + '/image%05d.jpg -vf format=yuv420p ' + video_path)
+    os.system('avconv -r 20 -i ' + self.video_dir + '/image%05d.jpg -vf format=yuv420p ' + video_path)
     print 'make video complete'
     self.upload_video(video_path)
 
@@ -102,6 +107,9 @@ class Timelapse:
 
   def start(self):
     print 'timelapse start!'
-    self.camera = camera = PiCamera()
-    set_camera_options(camera)
-    capture_image()
+    if self.config['create_new_folder'] == True :
+      self.create_timestamped_dir()
+    
+    self.camera = PiCamera()
+    self.set_camera_options(self.camera, self.config)
+    self.capture_image(self.config)

@@ -10,12 +10,11 @@ import random
 import requests
 import json
 import Adafruit_DHT as dht
+import threading
 
 
 class Sensor:
   def __init__(self, server_url):
-
-    server_url = 'http://deepmind.dothome.co.kr/controller.php'
 
     # GPIO는 두가지 버전으로 설정 가능합니다. 그 중, 기능별로 포트 번호를 구분해 놓은 BCM을 사용합니다.
     GPIO.setmode(GPIO.BCM)
@@ -37,18 +36,18 @@ class Sensor:
     self.bus.write_byte_data(0x39, 0x01 | 0x80, 0x02)
 
 
-  def sense_dht():
+  def sense_dht(self):
     h,t = dht.read_retry(dht.DHT22, 4)
     return {'humidity' : h, 'temperature' : t}
 
-  def sense_lux():
+  def sense_lux(self):
     data = self.bus.read_i2c_block_data(0x39, 0x0c | 0x80, 2)
     data1 = self.bus.read_i2c_block_data(0x39, 0x0E | 0x80, 2)
     ch0 = data[1] * 256 + data[0]
     ch1 = data[1] * 256 + data1[1]
     return ch0
 
-  def sense_ph():
+  def sense_ph(self):
     size = 100
     sum = 0
     for i in range(0, size):
@@ -57,11 +56,12 @@ class Sensor:
 
     return sum/size
 
-  def get_time():
+  def get_time(self):
     now = datetime.datetime.now()
     record_time = now.strftime('%Y-%m-%d %H:%M:%S')
+    return record_time
 
-  def send_to_sever(records):
+  def send_to_server(self, records):
     r = requests.post(self.server_url, data={'insert': True, 'records': json.dumps(records)})
     print r.text
     response = r.json()
@@ -70,3 +70,22 @@ class Sensor:
     else:
       print response['error_message']
       sys.exit()
+    
+
+  def start(self):
+    try:
+      record_time = self.get_time()
+      t_h = self.sense_dht()
+      # 서버에 전달할 센서값들을 한데 모은다
+      records = {
+        'temperature': format(t_h['temperature'], '.2f'),
+        'humidity': format(t_h['humidity'], '.2f'),
+        'light': self.sense_lux(),
+        'ph': self.sense_ph(),
+        'time': record_time
+      }
+      print records
+      self.send_to_server(records)
+      threading.Timer( 30, self.start ).start()
+    except KeyboardInterrupt, SystemExit:
+      print '\n timelapse capture cancelled'
