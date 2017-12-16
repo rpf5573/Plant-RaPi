@@ -2,7 +2,6 @@
 # 기본 설정들 #
 ############
 
-
 # 찍힐 사진의 해상도를 정해주자
 resolution: {
   width: 480,
@@ -10,7 +9,7 @@ resolution: {
 }
 
 # 총 찍을 사진의 개수를 정해주자
-total_images: 17280
+total_images: 300
 
 # 몇초에 한번씩 찍을것인지 정해주자
 interval: 5.0
