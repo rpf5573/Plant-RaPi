@@ -12,11 +12,10 @@ import upload
 import shutil
 
 class Timelapse:
-  def __init__(self, video_dir, camera, image_number, config):
-    self.video_dir = video_dir
-    self.camera = camera
-    self.image_number = image_number
+  def __init__(self, config):
+    self.video_dir = config['video_dir']
     self.config = config
+    self.image_number = config['image_number']
 
   def create_timestamped_dir(self):
     try:
@@ -60,9 +59,6 @@ class Timelapse:
     if config['rotation']:
       self.camera.rotation = config['rotation']
 
-    # 카메라 설정 완료
-    return camera
-
   def capture_image(self):
     print "Let's take a photo"
     try:
@@ -83,7 +79,7 @@ class Timelapse:
     except KeyboardInterrupt, SystemExit:
       print '\n timelapse capture cancelled'      
 
-  def make_video(self, cb):
+  def make_video(self):
     now = datetime.now()
     nowDate = now.strftime('%Y-%m-%d_%H_%M_%S')
     video_path = self.video_dir + '/timelapse' + nowDate + '.mp4'
@@ -103,3 +99,9 @@ class Timelapse:
       print 'remvoe video folder'
       shutil.rmtree(self.video_dir, ignore_errors=True)
       print 'did remove video folder'
+
+  def start(self):
+    print 'timelapse start!'
+    self.camera = camera = PiCamera()
+    set_camera_options(camera)
+    capture_image()
