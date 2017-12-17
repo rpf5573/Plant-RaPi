@@ -40,7 +40,7 @@ class Sensor:
     h,t = dht.read_retry(dht.DHT22, 4)
     return {'humidity' : h, 'temperature' : t}
 
-  def sense_lux(self):
+  def sense_light(self):
     data = self.bus.read_i2c_block_data(0x39, 0x0c | 0x80, 2)
     data1 = self.bus.read_i2c_block_data(0x39, 0x0E | 0x80, 2)
     ch0 = data[1] * 256 + data[0]
@@ -80,7 +80,7 @@ class Sensor:
       records = {
         'temperature': format(t_h['temperature'], '.2f'),
         'humidity': format(t_h['humidity'], '.2f'),
-        'light': self.sense_lux(),
+        'light': self.sense_light(),
         'ph': self.sense_ph(),
         'time': record_time
       }
