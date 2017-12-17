@@ -89,3 +89,4 @@ class Sensor:
       threading.Timer( 30, self.start ).start()
     except KeyboardInterrupt, SystemExit:
       print '\n timelapse capture cancelled'
+      sys.exit()
