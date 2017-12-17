@@ -86,7 +86,7 @@ class Sensor:
       }
       print records
       self.send_to_server(records)
-      threading.Timer( 30, self.start ).start()
+      threading.Timer( 3600, self.start ).start()
     except KeyboardInterrupt, SystemExit:
       print '\n timelapse capture cancelled'
       sys.exit()

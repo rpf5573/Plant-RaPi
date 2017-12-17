@@ -29,7 +29,6 @@ timelapse = Timelapse(config)
 sensor.start()
 timelapse.start()
 
-
 # queue = Queue()
 # processes = {
 #   'sensor': Process(target=sensor.start),

@@ -2,7 +2,8 @@
 # 기본 설정들 #
 ############
 
-create_new_folder : True
+create_new_folder : False
+remove_folder_after_make_timelapse : False
 
 image_number : 0
 

@@ -98,7 +98,10 @@ class Timelapse:
     if rpfVideoUploader.upload_init() == 201:
       print 'video upload start'
       # 업로드 완료후에, 이미지 및 동영상을 라즈베리파이에서 삭제 시킨다
-      rpfVideoUploader.upload(self.remove_video_folder)
+      if self.config['remove_folder_after_make_timelapse'] == True:
+        rpfVideoUploader.upload(self.remove_video_folder)
+      else:
+        rpfVideoUploader.upload(None)
 
   def remove_video_folder(self):
       print 'remvoe video folder'
