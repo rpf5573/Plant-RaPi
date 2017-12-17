@@ -55,6 +55,5 @@ class RPFVideoUploader(object):
       print "%s of %s bytes uploaded" % (str(bytes_sent), str(self.total_bytes))
 
     print "upload chunks complete!"
-    if callback is not None {
+    if callback is not None :
       callback()
-    }

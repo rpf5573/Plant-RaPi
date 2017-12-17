@@ -82,6 +82,7 @@ class Timelapse:
         # thread = threading.Timer(5, self.make_video).start()
 
     except KeyboardInterrupt, SystemExit:
+      sys.exit()
       print '\n timelapse capture cancelled'      
 
   def make_video(self):
@@ -99,9 +100,14 @@ class Timelapse:
       print 'video upload start'
       # 업로드 완료후에, 이미지 및 동영상을 라즈베리파이에서 삭제 시킨다
       if self.config['remove_folder_after_make_timelapse'] == True:
-        rpfVideoUploader.upload(self.remove_video_folder)
+        rpfVideoUploader.upload(self.restart)
       else:
         rpfVideoUploader.upload(None)
+
+  def restart(self):
+    self.remove_video_folder()
+    self.image_number = 0
+    self.start()
 
   def remove_video_folder(self):
       print 'remvoe video folder'
