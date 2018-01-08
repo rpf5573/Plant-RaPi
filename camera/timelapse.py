@@ -87,8 +87,8 @@ class Timelapse:
 
   def make_video(self):
     now = datetime.now()
-    nowDate = now.strftime('%Y-%m-%d_%H_%M_%S')
-    video_path = self.video_dir + '/timelapse' + nowDate + '.mp4'
+    nowDate = now.strftime('%Y%m%d_%H%M%S')
+    video_path = self.video_dir + '/' + nowDate + '.mp4'
     os.system('avconv -r 20 -i ' + self.video_dir + '/image%05d.jpg -vf format=yuv420p ' + video_path)
     print 'make video complete'
     self.upload_video(video_path)

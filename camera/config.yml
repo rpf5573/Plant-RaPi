@@ -14,7 +14,7 @@ resolution: {
 }
 
 # 총 찍을 사진의 개수를 정해주자
-total_images: 100
+total_images: 8640
 
 # 몇초에 한번씩 찍을것인지 정해주자
 interval: 5.0
