@@ -15,7 +15,6 @@ import spidev
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
 
-
 class Sensor:
   def __init__(self, server_url):
 
