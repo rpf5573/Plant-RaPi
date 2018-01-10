@@ -11,6 +11,9 @@ import requests
 import json
 import Adafruit_DHT as dht
 import threading
+import spidev
+import Adafruit_GPIO.SPI as SPI
+import Adafruit_MCP3008
 
 
 class Sensor:
@@ -35,6 +38,12 @@ class Sensor:
     # Norminal integration time = 402ms 0x02(02)
     self.bus.write_byte_data(0x39, 0x01 | 0x80, 0x02)
 
+    # SPI를 사용해서 ADC로부터 PH측정값을 읽어오기위한 설정
+    SPI_PORT = 0
+    SPI_DEVICE = 0
+    self.mcp = Adafruit_MCP3008.MCP3008(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
+    self.sampling_length = 20
+    self.sampling_interval = 50
 
   def sense_dht(self):
     h,t = dht.read_retry(dht.DHT22, 4)
@@ -48,18 +57,24 @@ class Sensor:
     return ch0
 
   def sense_ph(self):
-    size = 100
     sum = 0
-    for i in range(0, size):
-      ph = random.randint(5,15)
-      sum += ph
+    count = 0
+    for i in range(0, self.sampling_length):
+      reading = self.mcp.read_adc(0)
+      voltage = reading*5.0 / 1024
+      phValue = 3.3*voltage
+      sum += phValue
+      time.sleep(self.sampling_interval)
 
-    return sum/size
+    return sum/self.sampling_length
 
   def get_time(self):
     now = datetime.datetime.now()
     record_time = now.strftime('%Y-%m-%d %H:%M:%S')
     return record_time
+  
+  def current_milli_time():
+    return int(round(time.time() * 1000))
 
   def send_to_server(self, records):
     r = requests.post(self.server_url, data={'insert': True, 'records': json.dumps(records)})
@@ -70,7 +85,6 @@ class Sensor:
     else:
       print response['error_message']
       sys.exit()
-    
 
   def start(self):
     try:
